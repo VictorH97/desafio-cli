@@ -1,0 +1,7 @@
+Tempo total de execução: {{.TotalTime}}
+Total de requests: {{.NumberOfRequests}}
+Total de requests com status 200: {{.NumberOfRequestsOk}}
+Distribuição de outros códigos (código - ocorrências):
+{{ range $key, $value := .Requests }}
+    {{ $key }} - {{ $value }}
+{{ end }}

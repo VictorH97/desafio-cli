@@ -89,20 +89,10 @@ func executeStressTest() RunFunc {
 }
 
 func generateReport(report Report) {
-	reportFile, err := os.Create("relatorio.html")
-	if err != nil {
-		panic(err)
-	}
+	temp := template.Must(template.New("template.txt").ParseFiles("template.txt"))
 
-	temp := template.Must(template.New("template.html").ParseFiles("template.html"))
-
-	err = temp.Execute(reportFile, report)
+	err := temp.Execute(os.Stdout, report)
 	if err != nil {
 		panic("Generating report error: " + err.Error())
-	}
-
-	err = reportFile.Close()
-	if err != nil {
-		panic(err)
 	}
 }
