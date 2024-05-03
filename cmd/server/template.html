@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Relatório Stress Test</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Tempo total de execução</th>
+                <th>Total de requests</th>
+                <th>Total de requests com status 200</th>
+                <th>Distribuição de outros códigos</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ .TotalTime }}</td>
+                <td>{{ .NumberOfRequests }}</td>
+                <td>{{ .NumberOfRequestsOk }}</td>
+                <td>
+                    {{ range $key, $value := .Requests }}
+                        {{ $key }} - {{ $value }}
+                    {{ end }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
