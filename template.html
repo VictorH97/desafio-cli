@@ -1,10 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
 </head>
+
 <body>
     <h1>Relatório Stress Test</h1>
 
@@ -14,7 +35,7 @@
                 <th>Tempo total de execução</th>
                 <th>Total de requests</th>
                 <th>Total de requests com status 200</th>
-                <th>Distribuição de outros códigos</th>
+                <th>Distribuição de outros códigos (código - ocorrências)</th>
             </tr>
         </thead>
         <tbody>
@@ -24,11 +45,12 @@
                 <td>{{ .NumberOfRequestsOk }}</td>
                 <td>
                     {{ range $key, $value := .Requests }}
-                        {{ $key }} - {{ $value }}
+                    {{ $key }} - {{ $value }}
                     {{ end }}
                 </td>
             </tr>
         </tbody>
     </table>
 </body>
+
 </html>
