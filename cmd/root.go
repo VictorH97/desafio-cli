@@ -45,6 +45,8 @@ func executeStressTest() RunFunc {
 	return func(cmd *cobra.Command, args []string) {
 		startExecutionTime := time.Now()
 
+		var limitOfCalls []int
+
 		url, _ := cmd.Flags().GetString("url")
 		requests, _ := cmd.Flags().GetInt32("requests")
 		concurrency, _ := cmd.Flags().GetInt32("concurrency")
@@ -57,27 +59,36 @@ func executeStressTest() RunFunc {
 		}
 
 		for i := 0; i < int(concurrency); i++ {
-			go func() {
+			if int(requests)-int(concurrency)*(i+1) >= 0 {
+				limitOfCalls = append(limitOfCalls, int(concurrency))
+			} else {
+				limitOfCalls = append(limitOfCalls, int(requests)-int(concurrency)*i)
+				break
+			}
+		}
+
+		for i := 0; i < len(limitOfCalls); i++ {
+			go func(limit int) {
 				mutex := sync.Mutex{}
 
-				for i := 0; ; i++ {
+				for i := 0; i < limit; i++ {
 					resp, _ := http.Get(url)
 
-					defer resp.Body.Close()
+					if resp != nil {
+						atomic.AddInt32(&report.NumberOfRequests, 1)
 
-					atomic.AddInt32(&report.NumberOfRequests, 1)
-
-					if resp.StatusCode == http.StatusOK {
-						atomic.AddInt32(&report.NumberOfRequestsOk, 1)
-					} else {
-						mutex.Lock()
-						report.Requests[int32(resp.StatusCode)]++
-						mutex.Unlock()
+						if resp.StatusCode == http.StatusOK {
+							atomic.AddInt32(&report.NumberOfRequestsOk, 1)
+						} else {
+							mutex.Lock()
+							report.Requests[int32(resp.StatusCode)]++
+							mutex.Unlock()
+						}
 					}
 
 					waitGroup.Done()
 				}
-			}()
+			}(limitOfCalls[i])
 		}
 
 		waitGroup.Wait()
